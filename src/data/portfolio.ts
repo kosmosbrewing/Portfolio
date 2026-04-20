@@ -75,11 +75,8 @@ export interface ProjectContent {
 export interface DomainCard {
   readonly index: string;
   readonly title: string;
-  readonly problem: string;
-  readonly solution: string;
-  readonly impacts: readonly Metric[];
-  readonly summary: string;
-  readonly details?: readonly string[]; // 신빙성 강화용 구체 사양
+  /** 문제 → 해결 → 결과를 한 단락 내러티브로 압축한 설명. 추상 요약보다 실제 구축 경험의 목소리로. */
+  readonly description: string;
 }
 
 export interface CostPoint {
@@ -290,14 +287,14 @@ export const portfolio: Portfolio = {
   domain: [
     {
       index: '01',
-      title: 'Pre-rendering SEO',
-      problem: 'Vue SPA — JS 실행 전 크롤러는 빈 OG 태그만 수집',
-      solution: '빌드 타임 프리렌더링 + CloudFront Function URL 라우팅',
+      title: '검색 · SNS 노출 정상화',
+      problem: 'SPA 특성상 검색엔진과 SNS가 빈 페이지로 인식',
+      solution: '빌드 시점에 각 페이지를 미리 생성하여 크롤러에 완성된 HTML 제공',
       impacts: [
         { value: '0 → 페이지별', label: '정적 HTML' },
         { value: '미노출 → 정상', label: 'OG · Rich Results' },
       ],
-      summary: 'JSON-LD 6종(Product·Organization 등) 자동 생성으로 SNS 미리보기·구글 Rich Results 정상 노출. HTML 5분/Assets 1년 캐시 전략 적용.',
+      summary: 'SNS 공유 미리보기 정상 노출. 구글 Rich Results 대응 완료(JSON-LD 6종).',
       details: [
         'JSON-LD 6종: Product · Organization · FAQPage · BreadcrumbList · WebSite · ItemList',
         'SEO API 7개 엔드포인트 호출 + pagination(limit=100)으로 전 상품 순회',
@@ -308,14 +305,14 @@ export const portfolio: Portfolio = {
     },
     {
       index: '02',
-      title: '재고 Race Condition & 3중 복원',
-      problem: '동시 주문 · 결제 실패 · 브라우저 종료 — 재고 정합성 붕괴 위험',
-      solution: 'SELECT FOR UPDATE 행 잠금 + 즉시 차감 + 3중 복원',
+      title: '재고 정합성 보장',
+      problem: '동시 주문, 결제 실패, 브라우저 종료 등 다양한 이탈 상황에서 재고가 어긋날 위험',
+      solution: '주문 시점에 즉시 차감 + 3가지 경로로 자동 복원 (직접 취소 · 브라우저 종료 감지 · 1분 주기 자동 정리)',
       impacts: [
         { value: '가능 → 불가', label: '초과 판매' },
         { value: '1종 → 3종', label: '복원 경로' },
       ],
-      summary: '1점 한정 빈티지 특성상 초과 판매는 곧 신뢰 손실. 사용자 취소·sendBeacon·Cron 1분 주기 3중 복원으로 모든 실패 경로를 자동 커버.',
+      summary: '1점 한정 특성상 초과 판매 = 신뢰 손실. 모든 이탈 경로에서 재고 자동 복원.',
       details: [
         'SELECT … FOR UPDATE 행 잠금 — 모든 요청 순차 처리 (SKIP LOCKED 미사용)',
         'Self-Lock Bypass: 본인 pending/paying 주문(10분 이내) 가산 후 재주문 허용',
@@ -326,14 +323,14 @@ export const portfolio: Portfolio = {
     },
     {
       index: '03',
-      title: '배송비 & 공정 환불',
-      problem: '무료배송(7만원) 후 부분 환불 — 배송비 회피 & 중복 페널티 위험',
-      solution: '환불 분기 4종 + 페널티 1회 제한 플래그 + 판매자 귀책 면제',
+      title: '공정한 환불 정책',
+      problem: '무료배송 주문을 부분 취소하면 배송비를 누가 부담하는지, 페널티가 중복되지 않는지 문제',
+      solution: '배송 전/후 × 귀책 사유별 4가지 환불 분기 + 페널티 최대 1회 제한',
       impacts: [
         { value: '4종', label: '환불 분기 (배송 전/후 × 귀책)' },
         { value: '1회', label: '페널티 부과 한도' },
       ],
-      summary: '다중 부분 취소에도 페널티는 1회만 — 고객 보호와 무료배송 악용 방지를 양립. 판매자 귀책 시 고객 배송비 면제.',
+      summary: '여러 번 부분 취소해도 고객에게 불이익은 1회만. 판매자 책임일 때는 고객 배송비 면제로 공정성 확보.',
       details: [
         '환불 분기 4종: 배송 전/후 × 판매자/고객 귀책',
         '`shippingPenaltyApplied` 플래그로 다중 부분 취소 시 페널티 중복 부과 방지',
@@ -352,7 +349,7 @@ export const portfolio: Portfolio = {
       title: 'FinOps',
       subtitle: '월 인프라 비용 — 4개월 추이',
       headline: {
-        value: '$29 → $16',
+        value: '$53 → $29',
         label: 'Mar → Apr MTD · ALB → API Gateway 전환 후',
       },
       levers: [

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Technical Decisions — 도메인 특성과 결과 중심으로 추상화.
+ * Technical Decisions — 비즈니스 가치 중심, 개행 분리로 가독성 확보.
  */
 import { portfolio } from '@/data/portfolio';
 
@@ -8,9 +8,10 @@ const cards = portfolio.domain;
 </script>
 
 <template>
-  <div class="mt-14 reveal">
+  <hr class="mx-auto mt-14 w-full max-w-[75rem] border-0 border-t border-ink-line" aria-hidden="true" />
+  <div class="mt-10 reveal">
     <p class="eyebrow">Technical Decisions</p>
-    <h3 class="mt-2 text-[18px] font-bold text-ink">세 가지 결정으로 SPA의 한계 해소</h3>
+    <h3 class="mt-2 text-[18px] font-bold text-ink">커머스 도메인에서 마주친 세 가지 문제와 해결</h3>
   </div>
 
   <div class="mt-10">
@@ -22,12 +23,15 @@ const cards = portfolio.domain;
       <div class="grid gap-4 sm:grid-cols-[140px_1fr] sm:gap-8">
         <p class="text-[14px] text-ink-muted whitespace-nowrap">Case {{ c.index }}</p>
 
-        <div class="grid gap-2">
+        <div class="grid gap-3">
           <h4 class="text-[18px] font-semibold text-ink leading-snugger">
             {{ c.title }}
           </h4>
           <p class="text-[14px] leading-relaxed7 text-ink-body">
-            {{ c.problem }} → {{ c.solution }}
+            {{ c.problem }}
+          </p>
+          <p class="text-[14px] leading-relaxed7 text-ink">
+            → {{ c.solution }}
           </p>
           <p class="text-[13px] text-ink-muted">{{ c.summary }}</p>
         </div>

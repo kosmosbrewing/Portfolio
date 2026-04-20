@@ -75,7 +75,7 @@ function next() {
               </h3>
               <p class="text-[14px] text-ink-muted">여성 빈티지 이커머스 · 1인 풀스택 · 실결제 운영 중</p>
               <p class="text-[13px] text-ink-body">Vue 3 · Node.js · TypeScript · Drizzle · PostgreSQL</p>
-              <p class="text-[13px] text-ink-body">AWS (ECS · RDS · CloudFront) · Terraform IaC · GitHub Actions CI/CD</p>
+              <p class="text-[13px] text-ink-body">AWS (ECS · RDS · CloudFront) · GitHub Actions CI/CD</p>
             </div>
           </div>
         </div>

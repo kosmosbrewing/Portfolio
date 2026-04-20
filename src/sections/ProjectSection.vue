@@ -97,7 +97,7 @@ function next() {
           <p class="text-[14px] text-ink-muted whitespace-nowrap">Live Screens</p>
 
           <div>
-            <div class="media-frame media-frame-zoom relative">
+            <div class="media-frame media-frame-zoom group relative">
               <div class="carousel-viewport">
                 <TransitionGroup name="fade">
                   <CloudinaryImage
@@ -118,13 +118,13 @@ function next() {
               <button
                 type="button"
                 @click="prev"
-                class="absolute left-3 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-ink-line bg-paper/80 text-ink shadow-sm transition-colors duration-200 ease-smooth hover:bg-paper"
+                class="carousel-nav left-3"
                 aria-label="이전 화면"
               >&larr;</button>
               <button
                 type="button"
                 @click="next"
-                class="absolute right-3 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-ink-line bg-paper/80 text-ink shadow-sm transition-colors duration-200 ease-smooth hover:bg-paper"
+                class="carousel-nav right-3"
                 aria-label="다음 화면"
               >&rarr;</button>
             </div>

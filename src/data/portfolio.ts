@@ -79,50 +79,27 @@ export interface DomainCard {
   readonly description: string;
 }
 
-export interface CostPoint {
-  readonly month: string;
-  readonly amount: string;
-  readonly note?: string; // "Route 53 도메인 등록비 포함" / "MTD" 등 주석
-}
-
-/** Ops 카드 하단에 붙는 근거 이미지 (선택). 없으면 figure 렌더 생략. */
+/** Ops 카드 하단에 붙는 근거 이미지 한 장. */
 export interface OpsEvidence {
   readonly src: string;
   readonly alt: string;
+}
+
+/** Ops 3개 카드(FinOps / Performance / CI·CD)가 공유하는 통일 형식.
+ *  headline: 큰 숫자 한 줄 · description: 두괄식 2행(lead + body) · stack: 기술 구성 · source: 출처
+ *  evidences: 근거 이미지 여러 장 가능 — 각 카드마다 1장 이상 첨부 */
+export interface OpsCard {
+  readonly headline: string;
+  readonly description: string;
+  readonly stack: string;
   readonly source: string;
-}
-
-export interface FinOpsContent {
-  readonly title: string;
-  readonly subtitle: string;
-  readonly headline: Metric;
-  readonly levers: readonly { readonly key: string; readonly note: string }[];
-  readonly journey: readonly CostPoint[];
-  readonly disclosure: string;
-  readonly evidence?: OpsEvidence;
-}
-
-export interface PerformanceContent {
-  readonly title: string;
-  readonly subtitle: string;
-  readonly headline: Metric;
-  readonly journey: readonly Metric[];
-  readonly disclosure: string;
-  readonly evidence?: OpsEvidence;
-}
-
-export interface CICDContent {
-  readonly title: string;
-  readonly subtitle: string;
-  readonly headline: Metric;
-  readonly pipeline: readonly string[];
-  readonly evidence?: OpsEvidence;
+  readonly evidences?: readonly OpsEvidence[];
 }
 
 export interface OpsContent {
-  readonly finops: FinOpsContent;
-  readonly performance: PerformanceContent;
-  readonly cicd: CICDContent;
+  readonly finops: OpsCard;
+  readonly performance: OpsCard;
+  readonly cicd: OpsCard;
 }
 
 export interface ContactContent {
@@ -152,7 +129,7 @@ export interface Portfolio {
 export const portfolio: Portfolio = {
   meta: {
     siteUrl: 'https://portfolio.shakilabs.com',
-    updatedAt: '2026-04-19',
+    updatedAt: '2026-04-21',
   },
 
   hero: {
@@ -289,19 +266,19 @@ export const portfolio: Portfolio = {
       index: '01',
       title: '검색 노출 정상화',
       description:
-        '상품 상세 페이지 검색 노출과 SNS 공유 미리보기를 함께 정상화.\nVue SPA 구조상 검색엔진·SNS가 빈 페이지로 인식하던 한계를,\n빌드 시점 미리 렌더링과 구조화 데이터 6종 자동 생성으로 해소.',
+        '검색엔진과 SNS가 상품 페이지 내용을 읽지 못하는 SPA 구조적 한계를 빌드 시점 프리렌더링과 구조화 데이터(JSON-LD) 자동 생성으로 해소했습니다. 상품 상세 페이지의 검색 노출 기반을 확보하고 SNS 공유 미리보기를 정상화했습니다.',
     },
     {
       index: '02',
       title: '재고 정합성 보장',
       description:
-        '1점 한정 빈티지 특성상 초과 판매를 원천 차단.\n동시 주문·결제 실패·브라우저 종료 등 모든 이탈 경로에서 재고가 어긋날 수 있는 위험을,\n주문 시점 즉시 차감과 3가지 자동 복원 경로로 다중화해 해소.',
+        '동시 주문, 결제 실패, 브라우저 종료 등 모든 이탈 경로에서 재고가 어긋날 수 있는 위험을 주문 시점 즉시 차감과 자동 복원으로 해소했습니다. 1점 한정 빈티지 특성상 초과 판매는 곧 신뢰 손실이기에 수동 개입 없는 정합성 체계를 구축했습니다.',
     },
     {
       index: '03',
       title: '환불 · 배송비 정책',
       description:
-        '악용 방지와 고객 보호를 양립한 환불 규칙 정립.\n무료배송 부분 취소에서 발생하는 배송비 부담·페널티 중복의 정책 공백을,\n배송 전후 × 귀책 사유 4가지 분기와 페널티 1회 제한·판매자 귀책 시 면제 로직으로 해결.',
+        '무료배송 주문의 부분 취소 시 배송비 부담과 페널티 중복이 모호한 정책 공백을 배송 전후와 귀책 사유 기준으로 정리했습니다. 페널티는 최대 1회로 제한하고, 판매자 귀책 시 고객 배송비를 면제하여 악용 방지와 고객 보호를 양립했습니다.',
     },
   ],
 
@@ -310,61 +287,46 @@ export const portfolio: Portfolio = {
   // -------------------------------------------------------------------------
   ops: {
     finops: {
-      title: 'FinOps',
-      subtitle: '월 인프라 비용 — 4개월 추이',
-      headline: {
-        value: '$53 → $29',
-        label: 'Mar → Apr MTD · ALB → API Gateway 전환 후',
-      },
-      levers: [
-        { key: 'GATEWAY', note: 'ALB → API Gateway HTTP v2 + VPC Link (주 절감 레버)' },
-        { key: 'VPC', note: 'NAT Gateway → VPC Endpoint 전환' },
-        { key: 'ECS', note: 'Fargate Spot 70% 혼합' },
-        { key: 'RDS', note: 'db.t4g.micro + Graviton2' },
-        { key: 'CDN', note: 'CloudFront 정적 캐시 (max-age 1년)' },
-        { key: 'ECR', note: '이미지 Lifecycle Policy' },
+      headline: '$29 / 월   (−45%)',
+      description:
+        'ALB → API Gateway 전환으로 시간당 고정 과금을 요청 기반으로 바꾸고, VPC Link 기반 프라이빗 통신으로 퍼블릭 IP를 제거했습니다. Fargate Spot 70% 혼합으로 컴퓨트 단가까지 최적화하여 월 인프라 비용을 $53에서 $29로 절감했습니다.',
+      stack: 'ALB → API Gateway · VPC Link · Fargate Spot 70%',
+      source: 'AWS Cost Explorer · 2026-03~04',
+      evidences: [
+        {
+          src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776653440/shakishaki/products/cyu3ynezy2qtby1wgmxg.png',
+          alt: 'AWS Cost Explorer 월별 비용 추이 그래프',
+        },
       ],
-      journey: [
-        { month: '2026-01', amount: '$73', note: 'Route 53 도메인 등록비(1회성) 포함' },
-        { month: '2026-02', amount: '$27' },
-        { month: '2026-03', amount: '$29' },
-        { month: '2026-04', amount: '$16', note: 'MTD · 04-19 기준 (월말 추정 ~$25)' },
-      ],
-      disclosure:
-        'Source: AWS Cost Explorer (group by Service). Jan은 Route 53 도메인 1회성 비용 포함, Apr은 04-19 시점 MTD.',
-      evidence: {
-        src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776653440/shakishaki/products/cyu3ynezy2qtby1wgmxg.png',
-        alt: 'AWS Cost Explorer 월별 비용 추이 그래프 — 2026년 1월 $73에서 4월 $16(MTD)으로 감소',
-        source: 'AWS Cost Explorer (group by Service)',
-      },
     },
     performance: {
-      title: 'Performance',
-      subtitle: 'Lighthouse 실측 — 모바일 Slow 4G',
-      // Why: 점수보다 전송 크기 절감이 가장 인상적이고 정직한 헤드라인
-      headline: { value: '−68%', label: '전송 크기 6.9MB → 2.2MB' },
-      journey: [
-        { value: '55 → 62', label: 'Lighthouse Performance' },
-        { value: '31.8s → 10.6s', label: 'LCP  (−66.7%)' },
-        { value: '14.7s → 4.7s', label: 'FCP  (−68.0%)' },
-        { value: '2.65MB → 50KB', label: 'Hero 이미지  (−98.1%)' },
-        { value: '726KB → 151KB', label: 'JS 번들  (−79.2%)' },
-        { value: '0', label: 'CLS (완벽 유지)' },
+      headline: 'Lighthouse Performance 98 · SEO 100',
+      description:
+        'Desktop 기준 Performance 98, Accessibility 100, SEO 100을 달성했습니다. 이미지가 많은 커머스 서비스임에도 레이아웃 흔들림 없이 안정적인 로딩 품질을 유지하고 있습니다.',
+      stack: '프리렌더링 · WebP · Code Splitting · Lazy Loading · CloudFront 캐시',
+      source: 'Lighthouse · 2026-04-20',
+      evidences: [
+        {
+          src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776721640/shakishaki/products/p4uy8iicwghcvrpwkwl9.png',
+          alt: 'Lighthouse Desktop 리포트 — Performance 98',
+        },
+        {
+          src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776724291/shakishaki/products/irckfusdchkwiu8t4wbg.png',
+          alt: 'Lighthouse Mobile 리포트',
+        },
       ],
-      disclosure:
-        'Source: Lighthouse CI · 로컬 개발 서버 기준. 프로덕션은 CDN 캐시 + brotli 적용으로 추가 개선 여지.',
     },
     cicd: {
-      title: 'CI/CD',
-      subtitle: 'GitHub Actions · Terraform · ECS Rolling',
-      headline: { value: 'Zero', label: '다운타임 — 헬스체크 + 롤링 업데이트' },
-      pipeline: [
-        'Frontend — S3 sync + CloudFront 선택적 무효화 (6경로 vs. 전체)',
-        'Backend — Docker 멀티스테이지(Alpine, 비루트 유저) → ECR push',
-        'Backend — ECS Rolling Update + GET /api/health (30s 간격, 실패 3회 시 롤백)',
-        'Backend — OIDC Role 인증 (Access Key 미사용)',
-        'IaC — Terraform: API Gateway · VPC Link · Cloud Map · CloudWatch',
-        '상태 관리 — S3 백엔드 + DynamoDB 잠금 (동시 apply 방지)',
+      headline: '175 deploys · 0 downtime · 평균 2분',
+      description:
+        '6개월간 175회 배포를 장애 0건, 평균 2분 이내로 완료했습니다. 배포는 최소한의 권한으로 관리하며, 헬스체크 통과 후 자동 전환하는 무중단 배포 구조로 운영하고 있습니다.',
+      stack: 'GitHub Actions · Docker · ECS Rolling Update · OIDC · Terraform',
+      source: 'GitHub Actions 이력 · 2025.10~',
+      evidences: [
+        {
+          src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776721609/shakishaki/products/lqm1wmj4oyhe2xp8jlva.jpg',
+          alt: 'GitHub Actions 배포 이력 — 175회 배포 · 장애 0건',
+        },
       ],
     },
   },

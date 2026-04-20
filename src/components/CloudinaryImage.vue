@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * CloudinaryImage — 통합 이미지 컴포넌트.
- *  - Cloudinary URL을 f_auto · q_auto · w_<px>로 자동 최적화 (이미 변환 파라미터가 있으면 건드리지 않음)
+ *  - Cloudinary URL에 f_auto · q_auto · w_<px> 누락 파라미터만 병합해 항상 최적화
  *  - 1x / 2x srcset 생성
  *  - width + height 지정 시 aspect-ratio 기반 스켈레톤(pulse) 표시 → CLS 방지
  *  - 로드 완료 시 fade-in, 에러 시 fallback
@@ -28,17 +28,37 @@ const props = withDefaults(defineProps<{
   fade: true,
 });
 
+/**
+ * Cloudinary URL에 누락된 f_auto · q_auto · w_<px>를 병합.
+ * 이미 있는 변환(c_pad, b_white 등)은 보존하고, 없는 것만 앞에 추가한다.
+ */
 function optimize(url: string, w: number): string {
   if (!url.includes('res.cloudinary.com')) return url;
   const marker = '/image/upload/';
   const idx = url.indexOf(marker);
   if (idx === -1) return url;
+  const prefix = url.slice(0, idx + marker.length);
   const rest = url.slice(idx + marker.length);
-  const firstSegment = rest.split('/')[0] ?? '';
-  // 이미 변환 파라미터가 있으면 건드리지 않음 (v123 버전 세그먼트가 아닌 경우 = 변환 있음)
-  const hasTransforms = firstSegment.length > 0 && !firstSegment.startsWith('v');
-  if (hasTransforms) return url;
-  return url.slice(0, idx + marker.length) + `f_auto,q_auto,w_${w}/` + rest;
+  const slashIdx = rest.indexOf('/');
+  if (slashIdx === -1) return url;
+  const firstSegment = rest.slice(0, slashIdx);
+  const tailPath = rest.slice(slashIdx); // includes leading '/'
+
+  // 첫 세그먼트가 버전(vNNN)이면 변환 없음 → 전체 주입
+  if (/^v\d+$/.test(firstSegment)) {
+    return `${prefix}f_auto,q_auto,w_${w}/${rest}`;
+  }
+  // 기존 변환 세그먼트 — 누락된 파라미터만 앞에 병합
+  const parts = firstSegment.split(',');
+  const hasF = parts.some((p) => p.startsWith('f_'));
+  const hasQ = parts.some((p) => p.startsWith('q_'));
+  const hasW = parts.some((p) => p.startsWith('w_'));
+  const added: string[] = [];
+  if (!hasF) added.push('f_auto');
+  if (!hasQ) added.push('q_auto');
+  if (!hasW) added.push(`w_${w}`);
+  if (added.length === 0) return url;
+  return `${prefix}${[...added, ...parts].join(',')}${tailPath}`;
 }
 
 const src1x = computed(() => optimize(props.src, props.width));

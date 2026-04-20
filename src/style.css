@@ -99,14 +99,35 @@
     @apply block overflow-hidden rounded-sm border border-ink-line/70;
   }
 
-  /* Why: opacity dip은 드래그 선택 중에도 깜박여 산만하다.
-   *      커서(zoom-in / pointer)만으로 상호작용 의도가 충분히 전달된다. */
+  /* Why: 호버 시 살짝 떠오르는 입체감으로 "클릭 가능"을 명확히 전달.
+   *      opacity는 드래그-선택 간섭이 있어 제외하고, transform + shadow만으로 피드백.
+   *      border-color를 70% → 100%로 올려 윤곽을 선명하게, 미세한 -translate-y(2px)로 들림. */
+  .media-frame-zoom,
+  .media-frame-link {
+    @apply transition-[transform,box-shadow,border-color] duration-200 ease-smooth
+           will-change-transform;
+  }
   .media-frame-zoom {
     @apply cursor-zoom-in;
   }
-
   .media-frame-link {
     @apply cursor-pointer;
+  }
+  .media-frame-zoom:hover,
+  .media-frame-link:hover {
+    @apply -translate-y-0.5 border-ink-line shadow-md;
+  }
+
+  /* Carousel nav 버튼 — 평소 숨김, 부모(group) hover 시 fade-in + 직접 hover 시 입체적 강조.
+   * 부모에는 `group` + `relative`, 버튼에는 `carousel-nav left-3` 또는 `right-3`를 함께 적용. */
+  .carousel-nav {
+    @apply absolute top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 cursor-pointer
+           items-center justify-center rounded-full
+           border border-ink-line bg-paper text-ink shadow-sm
+           opacity-0 transition-[opacity,transform,box-shadow,background-color]
+           duration-200 ease-smooth
+           group-hover:opacity-100 focus-visible:opacity-100
+           hover:scale-110 hover:shadow-lg;
   }
 
   /* Section header pattern — 미니멀 볼드 타이틀 + 선택적 서브텍스트 */

@@ -287,57 +287,21 @@ export const portfolio: Portfolio = {
   domain: [
     {
       index: '01',
-      title: '검색 · SNS 노출 정상화',
-      problem: 'SPA 특성상 검색엔진과 SNS가 빈 페이지로 인식',
-      solution: '빌드 시점에 각 페이지를 미리 생성하여 크롤러에 완성된 HTML 제공',
-      impacts: [
-        { value: '0 → 페이지별', label: '정적 HTML' },
-        { value: '미노출 → 정상', label: 'OG · Rich Results' },
-      ],
-      summary: 'SNS 공유 미리보기 정상 노출. 구글 Rich Results 대응 완료(JSON-LD 6종).',
-      details: [
-        'JSON-LD 6종: Product · Organization · FAQPage · BreadcrumbList · WebSite · ItemList',
-        'SEO API 7개 엔드포인트 호출 + pagination(limit=100)으로 전 상품 순회',
-        'XSS 방지: escapeHtml(5문자) + `</script>` → `<\\/script>` 이스케이프',
-        '실패 허용: API 오류 시 해당 페이지 skip → 빌드 전체 실패 방지',
-        '캐시: HTML max-age=300, Assets max-age=31536000 + immutable',
-      ],
+      title: 'Pre-rendering SEO',
+      description:
+        'Vue SPA 특성상 크롤러가 JS 실행 전 빈 페이지를 수집하는 구조에서 빌드 타임 프리렌더링으로 전환하여 상품 상세 페이지의 검색 노출 기반을 확보했습니다. JSON-LD 6종(Product · Organization 등)을 자동 생성해 구글 Rich Results 정상 노출과 SNS 공유 미리보기 정상화를 달성했으며, HTML 5분 / Assets 1년 캐시 전략으로 CDN 효율까지 확보했습니다.',
     },
     {
       index: '02',
       title: '재고 정합성 보장',
-      problem: '동시 주문, 결제 실패, 브라우저 종료 등 다양한 이탈 상황에서 재고가 어긋날 위험',
-      solution: '주문 시점에 즉시 차감 + 3가지 경로로 자동 복원 (직접 취소 · 브라우저 종료 감지 · 1분 주기 자동 정리)',
-      impacts: [
-        { value: '가능 → 불가', label: '초과 판매' },
-        { value: '1종 → 3종', label: '복원 경로' },
-      ],
-      summary: '1점 한정 특성상 초과 판매 = 신뢰 손실. 모든 이탈 경로에서 재고 자동 복원.',
-      details: [
-        'SELECT … FOR UPDATE 행 잠금 — 모든 요청 순차 처리 (SKIP LOCKED 미사용)',
-        'Self-Lock Bypass: 본인 pending/paying 주문(10분 이내) 가산 후 재주문 허용',
-        '3중 복원: 사용자 취소(즉시) · sendBeacon(브라우저 종료) · Cron 1분 간격(5분 만료)',
-        '사이즈 정규화: `LOWER(TRIM(size))` 매칭 + 추출 실패 시 첫 variant 폴백',
-        '결제창 폴링: 1초 × 180회 = 3분 모니터링 후 타임아웃',
-      ],
+      description:
+        '동시 주문·결제 실패·브라우저 종료 등 재고 정합성 붕괴 위험이 존재하는 환경에서 SELECT FOR UPDATE 행 잠금과 즉시 차감으로 초과 판매 가능성을 원천 차단했습니다. 복원은 사용자 직접 취소 · sendBeacon 기반 이탈 감지 · Cron 1분 주기 자동 정리 3가지 경로로 이중화하여 모든 이탈 상황에서 재고 정합성을 유지했으며, 1점 한정 빈티지 특성상 초과 판매는 곧 신뢰 손실이라는 판단 아래 수동 개입 없는 운영 체계를 확립했습니다.',
     },
     {
       index: '03',
-      title: '공정한 환불 정책',
-      problem: '무료배송 주문을 부분 취소하면 배송비를 누가 부담하는지, 페널티가 중복되지 않는지 문제',
-      solution: '배송 전/후 × 귀책 사유별 4가지 환불 분기 + 페널티 최대 1회 제한',
-      impacts: [
-        { value: '4종', label: '환불 분기 (배송 전/후 × 귀책)' },
-        { value: '1회', label: '페널티 부과 한도' },
-      ],
-      summary: '여러 번 부분 취소해도 고객에게 불이익은 1회만. 판매자 책임일 때는 고객 배송비 면제로 공정성 확보.',
-      details: [
-        '환불 분기 4종: 배송 전/후 × 판매자/고객 귀책',
-        '`shippingPenaltyApplied` 플래그로 다중 부분 취소 시 페널티 중복 부과 방지',
-        '판매자 귀책 취소 시 `sellerCancelledAmount` 가산 → 고객 무료배송 기준 보호',
-        '상수 동기화: backend `shared/constants/shipping.ts` ↔ frontend fallback (런타임 GET /api/constants)',
-        '기준값: 무료배송 70,000원 · 기본 3,500원 · 도서산간 +2,500원 · 반품 편도 3,500원',
-      ],
+      title: '환불 · 배송비 정책',
+      description:
+        '무료배송(7만원) 주문의 부분 취소 시 배송비 부담 주체와 페널티 중복 부과가 모호한 정책 공백을 배송 전/후 × 귀책 사유 기준 4가지 분기로 정리했습니다. 페널티 최대 1회 제한 플래그를 설계해 다중 부분 취소에도 배송비 페널티는 1회 누적만 부과되도록 구조화했으며, 판매자 귀책 시 고객 배송비 면제 로직까지 포함해 악용 방지와 고객 보호를 양립시켰습니다.',
     },
   ],
 

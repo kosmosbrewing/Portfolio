@@ -27,13 +27,9 @@ const cards = portfolio.domain;
           <h4 class="text-[18px] font-semibold text-ink leading-snugger">
             {{ c.title }}
           </h4>
-          <p class="text-[14px] leading-relaxed7 text-ink-body">
-            {{ c.problem }}
+          <p class="text-pretty text-[15px] leading-relaxed7 text-ink-body">
+            {{ c.description }}
           </p>
-          <p class="text-[14px] leading-relaxed7 text-ink">
-            → {{ c.solution }}
-          </p>
-          <p class="text-[13px] text-ink-muted">{{ c.summary }}</p>
         </div>
       </div>
     </article>

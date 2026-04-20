@@ -18,9 +18,9 @@ useReveal();
 
   <header
     data-print-hide
-    class="sticky top-0 z-40 w-full bg-paper/80 backdrop-blur supports-[backdrop-filter]:bg-paper/65"
+    class="w-full bg-paper"
   >
-    <div class="w-full px-4 sm:px-10 flex h-12 items-center justify-between text-[13px]">
+    <div class="container-read flex h-12 items-center justify-between text-[13px]">
       <a href="#hero" class="font-medium tracking-tight text-ink hover:text-ink-muted">
         Lee Gyubin
       </a>

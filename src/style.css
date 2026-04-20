@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --paper: #ffffff;
+    --ink: #111111;
+    --ink-body: #2a2a2a;
+    --ink-muted: #6b6b6b;
+    --ink-hint: #9a9a9a;
+    --ink-line: #e8e6e2;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+      Roboto, 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+    font-feature-settings: 'ss03' on, 'cv11' on;
+    background-color: var(--paper);
+    color: var(--ink-body);
+    font-size: 16px;
+    line-height: 1.7;
+    /* Why: 한글은 단어 중간에서 줄바꿈되면 가독성 급락. CJK 단위 보존. */
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  /* Why: 검정 반전(ink/paper)은 대비가 과해 드래그 선택 시 편집디자인 톤이 깨진다.
+   *      얇은 회색 오버레이로 "선택됨" 만 은은하게 전달하고 본문 색은 유지. */
+  ::selection {
+    background-color: rgba(17, 17, 17, 0.12);
+    color: inherit;
+  }
+}
+
+@layer components {
+  /* Editorial single-column container.
+   * Why: webfolio-prismic 레퍼런스 .container와 동일한 3단 폭.
+   *      base 100% → md 750px → lg 810px. 이전 xl/2xl 축소 버그를 제거. */
+  .container-read {
+    @apply mx-auto w-full px-6 sm:px-8 md:max-w-[46.875rem] lg:max-w-read;
+  }
+  .container-wide {
+    @apply mx-auto w-full max-w-wide px-6 sm:px-8 lg:max-w-3xl xl:max-w-4xl;
+  }
+
+  .eyebrow {
+    @apply text-eyebrow font-medium uppercase tracking-wide2 text-ink-hint;
+  }
+
+  /* Hairline section divider; quiet but readable */
+  .rule {
+    @apply h-px w-full bg-ink-line;
+  }
+
+  /* Tabular numerals for stats and code-like values */
+  .num {
+    font-feature-settings: 'tnum' on, 'lnum' on;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* Inline editorial link — subtle underline, thicker on hover */
+  .link {
+    @apply text-ink underline decoration-ink-line decoration-1 underline-offset-[6px]
+           transition-[text-decoration-color,color] duration-200 ease-smooth
+           hover:decoration-ink hover:text-ink;
+  }
+
+  /* Arrow glyph that slides diagonally on parent hover (↗). 외부 링크의 시각 힌트. */
+  .link-arrow {
+    @apply inline-block transition-transform duration-200 ease-smooth
+           will-change-transform;
+  }
+  a:hover > .link-arrow,
+  .link:hover .link-arrow {
+    @apply translate-x-0.5 -translate-y-0.5;
+  }
+
+  /* ── 이미지 프레임 시스템 ──────────────────────────────────────────
+   * 모든 콘텐츠 이미지/다이어그램은 media-frame으로 래핑해
+   * 얇은 테두리 + 라운드 + placeholder 배경을 공유한다.
+   * 호버는 커서로 의도를 전달하고 시각 피드백은 매우 은은한 opacity만.
+   * (shadow나 border 색 변경은 편집디자인 톤에서 과하다)
+   *   - media-frame-zoom : 확대 모달 → cursor-zoom-in
+   *   - media-frame-link : 외부 링크 → cursor-pointer
+   * ─────────────────────────────────────────────────────────────── */
+  /* Why: 프레임은 hairline 테두리만 제공. 배경은 본문 paper와 동일하게 투명 유지
+   *      (이미지 스켈레톤은 CloudinaryImage 내부 span이 담당). */
+  .media-frame {
+    @apply block overflow-hidden rounded-sm border border-ink-line/70;
+  }
+
+  /* Why: opacity dip은 드래그 선택 중에도 깜박여 산만하다.
+   *      커서(zoom-in / pointer)만으로 상호작용 의도가 충분히 전달된다. */
+  .media-frame-zoom {
+    @apply cursor-zoom-in;
+  }
+
+  .media-frame-link {
+    @apply cursor-pointer;
+  }
+
+  /* Section header pattern — 미니멀 볼드 타이틀 + 선택적 서브텍스트 */
+  .section-head {
+    @apply mb-10 grid gap-2;
+  }
+
+  /* Article block pattern — 섹션 안의 자식 블록(프로젝트, 케이스 등) 공통 리듬.
+   * Why: 이전엔 부모 gap-N + 자식 border-t pt-N이 중복돼 80~96px 갭이 생김.
+   *      이 클래스는 첫 항목의 border/pt를 제거해 헤더 mb-14와 자연스레 잇는다. */
+  /* Why: `first:`는 :first-child 기준이라 hr/header 형제가 있으면 첫 article에도 border-t가 생긴다.
+   *      article 중에서 첫 요소를 노리려면 first-of-type으로 바꿔야 정확히 매칭된다. */
+  .article-block {
+    @apply border-t border-ink-line pt-8 mt-8
+           first-of-type:border-t-0 first-of-type:pt-0 first-of-type:mt-0;
+  }
+
+  /* Disclosure 라인 — 본문과 명확히 분리되는 작은 italic 캡션 */
+  .disclosure {
+    @apply mt-4 border-t border-ink-line pt-4 text-[11px] italic leading-relaxed7 text-ink-hint;
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+}
+
+/* Reveal-on-scroll
+ * Why: opacity:1 default 보장 — JS 실패/지연/no-JS에서도 콘텐츠 노출.
+ *      JS가 마운트 시 <html data-reveal-armed>를 세팅한 뒤에만 fade 적용. */
+html[data-reveal-armed] .reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+html[data-reveal-armed] .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  html[data-reveal-armed] .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* Print: PDF export — A4 portrait, generous typography, hide nav */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm 12mm;
+  }
+  html, body {
+    background: #ffffff !important;
+    color: #0a0a0a !important;
+    font-size: 11pt;
+  }
+  [data-print-hide] { display: none !important; }
+  section { break-inside: avoid; page-break-inside: avoid; }
+  .container-read, .container-wide { max-width: 100% !important; padding: 0 !important; }
+}

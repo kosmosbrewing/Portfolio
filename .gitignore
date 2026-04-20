@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-ssr
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.env
+.env.local
+.env.*.local
+*.log
+.vercel
+.cache
+coverage
+playwright-report
+test-results

@@ -27,7 +27,7 @@ const cards = portfolio.domain;
           <h4 class="text-[18px] font-semibold text-ink leading-snugger">
             {{ c.title }}
           </h4>
-          <p class="text-pretty text-[15px] leading-relaxed7 text-ink-body">
+          <p class="whitespace-pre-line text-[15px] leading-relaxed7 text-ink-body">
             {{ c.description }}
           </p>
         </div>

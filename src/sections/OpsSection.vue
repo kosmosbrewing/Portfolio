@@ -58,7 +58,7 @@ function modalNext() {
 </script>
 
 <template>
-  <hr class="mx-auto mt-14 w-full max-w-[75rem] border-0 border-t border-ink-line" aria-hidden="true" />
+  <hr class="mx-auto mt-14 w-full max-w-[75rem] border-0 border-t border-ink-line print:break-before-page" aria-hidden="true" />
   <div class="mt-10 reveal">
     <p class="eyebrow">Quality &amp; Ops</p>
     <h3 class="mt-2 text-[18px] font-bold text-ink">비용 · 성능 · 무중단 운영 지표</h3>

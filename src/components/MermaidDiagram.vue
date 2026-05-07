@@ -95,22 +95,43 @@ onMounted(() => {
     { rootMargin: '200px' },
   );
   observer.observe(container.value);
+
+  // Why: 인쇄(Cmd+P) 시점에 모든 다이어그램이 최종 높이로 안정화돼 있어야
+  //      PDF 레이아웃 시프트가 사라진다. idle 시점에 미리 렌더해 두는 안전망.
+  const eagerRender = () => {
+    if (status.value === 'idle') renderDiagram();
+  };
+  type WindowWithIdle = Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number };
+  const w = window as WindowWithIdle;
+  if (typeof w.requestIdleCallback === 'function') {
+    w.requestIdleCallback(eagerRender, { timeout: 2500 });
+  } else {
+    setTimeout(eagerRender, 1500);
+  }
+
+  // Why: 사용자가 idle 도래 전에 Cmd+P를 누른 경우에도 즉시 렌더 트리거.
+  //      Mermaid 렌더는 비동기라 print를 막지는 못하지만, 다음 페이지 로드 후
+  //      재시도엔 캐시 적중. 두 번째 인쇄부터는 안정적.
+  window.addEventListener('beforeprint', eagerRender);
 });
 
-onBeforeUnmount(() => observer?.disconnect());
+onBeforeUnmount(() => {
+  observer?.disconnect();
+});
 </script>
 
 <template>
   <div ref="container" class="w-full" :class="fitContainer ? '' : 'overflow-x-auto'">
+    <!-- Why: print:hidden — 인쇄 시 placeholder 텍스트("로딩 중…")가 PDF에 노출되는 것 차단. -->
     <div
       v-if="status === 'idle' || status === 'loading'"
-      class="flex h-[320px] items-center justify-center text-[12px] text-ink-hint"
+      class="flex h-[320px] items-center justify-center text-[12px] text-ink-hint print:hidden"
     >
       다이어그램 로딩 중…
     </div>
     <div
       v-else-if="status === 'error'"
-      class="flex h-[320px] items-center justify-center text-[12px] text-ink-muted"
+      class="flex h-[320px] items-center justify-center text-[12px] text-ink-muted print:hidden"
     >
       다이어그램 렌더 실패 — {{ errorMsg }}
     </div>

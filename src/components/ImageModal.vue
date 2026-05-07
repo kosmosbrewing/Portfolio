@@ -21,11 +21,28 @@ const emit = defineEmits<{
   next: [];
 }>();
 
+const modalHistoryId = `image-modal-${Math.random().toString(36).slice(2)}`;
+let hasModalHistoryEntry = false;
+
+function requestClose() {
+  if (props.open && hasModalHistoryEntry && typeof window !== 'undefined') {
+    window.history.back();
+    return;
+  }
+  emit('close');
+}
+
+function onPopstate() {
+  if (!props.open || !hasModalHistoryEntry) return;
+  hasModalHistoryEntry = false;
+  emit('close');
+}
+
 function onKeydown(e: KeyboardEvent) {
   if (!props.open) return;
   if (e.key === 'Escape') {
     e.preventDefault();
-    emit('close');
+    requestClose();
   }
   if (props.hasNav && e.key === 'ArrowLeft') {
     e.preventDefault();
@@ -40,11 +57,28 @@ function onKeydown(e: KeyboardEvent) {
 watch(() => props.open, (isOpen) => {
   if (typeof document === 'undefined') return;
   document.body.style.overflow = isOpen ? 'hidden' : '';
+
+  if (typeof window === 'undefined') return;
+  if (isOpen && !hasModalHistoryEntry) {
+    const currentState = typeof window.history.state === 'object' && window.history.state !== null
+      ? window.history.state
+      : {};
+    window.history.pushState(
+      { ...currentState, portfolioImageModal: modalHistoryId },
+      '',
+      window.location.href,
+    );
+    hasModalHistoryEntry = true;
+  }
 });
 
-onMounted(() => window.addEventListener('keydown', onKeydown));
+onMounted(() => {
+  window.addEventListener('keydown', onKeydown);
+  window.addEventListener('popstate', onPopstate);
+});
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown);
+  window.removeEventListener('popstate', onPopstate);
   if (typeof document !== 'undefined') document.body.style.overflow = '';
 });
 </script>
@@ -58,12 +92,12 @@ onBeforeUnmount(() => {
         role="dialog"
         aria-modal="true"
         :aria-label="alt"
-        @click.self="emit('close')"
+        @click.self="requestClose"
       >
         <!-- 닫기 -->
         <button
           type="button"
-          @click="emit('close')"
+          @click="requestClose"
           class="absolute right-4 top-4 z-10 inline-flex items-center gap-2 rounded-full border border-ink-line bg-paper px-4 py-2 text-[13px] font-medium text-ink shadow-lg transition-colors duration-200 ease-smooth hover:bg-white focus:outline-none focus:ring-2 focus:ring-ink md:right-6 md:top-6"
           aria-label="닫기"
         >

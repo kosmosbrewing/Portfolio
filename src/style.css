@@ -188,6 +188,23 @@ html[data-reveal-armed] .reveal.is-visible {
     font-size: 11pt;
   }
   [data-print-hide] { display: none !important; }
-  section { break-inside: avoid; page-break-inside: avoid; }
+  /* Why: 인쇄 시 IntersectionObserver가 발화하지 않아 reveal 요소가 opacity:0인
+   *      채로 빈 공간으로 인쇄되는 사고 방지. */
+  html[data-reveal-armed] .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  /* Why: CloudinaryImage의 fade-in 로직이 인쇄 시점에 loaded=false 상태로 남아
+   *      이미지가 opacity:0으로 빈 상자처럼 인쇄되는 사고 방지. 스켈레톤도 차단. */
+  img { opacity: 1 !important; transition: none !important; }
+  .animate-pulse { display: none !important; }
+  /* Why: 컬러/이미지가 흐리게 인쇄되는 브라우저 기본 동작 차단 — Cost Explorer
+   *      차트처럼 색상 정보가 의미 있는 evidence는 정확히 재현돼야 한다. */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  /* Why: 섹션 단위 break-inside: avoid는 한 페이지보다 큰 섹션을 통째로 다음
+   *      페이지로 밀어버려 첫 페이지에 큰 공백을 만든다. 카드/article 단위로만 회피. */
+  .article-block,
+  .media-frame { break-inside: avoid; page-break-inside: avoid; }
   .container-read, .container-wide { max-width: 100% !important; padding: 0 !important; }
 }

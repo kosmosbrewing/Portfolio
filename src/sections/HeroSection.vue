@@ -4,16 +4,21 @@
  */
 import { portfolio } from '@/data/portfolio';
 import CloudinaryImage from '@/components/CloudinaryImage.vue';
+import { defineAsyncComponent } from 'vue';
 
 const hero = portfolio.hero;
+const PrintPortfolioQr = import.meta.env.DEV
+  ? defineAsyncComponent(() => import('@/components/PrintPortfolioQr.vue'))
+  : null;
 </script>
 
 <template>
   <section
-    class="relative pb-12 pt-8 md:pt-10 print:break-after-page"
+    class="relative pb-12 pt-8 md:pt-10"
     aria-labelledby="hero-name"
   >
     <div class="container-read">
+      <component :is="PrintPortfolioQr" v-if="PrintPortfolioQr" />
       <div class="reveal">
         <!-- 아바타(좌) + 텍스트 스택(우) 수평 배치 -->
         <div class="grid items-start gap-8 sm:grid-cols-[auto_1fr] sm:gap-10">

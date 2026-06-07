@@ -136,7 +136,7 @@ export const portfolio: Portfolio = {
     // Why: 한국 채용 시장 타깃이라 한글이 H1, 영문은 보조 subtitle. proper case로 표기.
     nameEn: 'Lee Gyubin',
     nameKo: '이규빈',
-    role: 'Financial Channel & Integration Engineer',
+    role: 'Technical Product Manager (TPM) · Financial Platforms',
     // Why: 단락 한 개에 핵심 메트릭과 도메인을 농축. 길이는 ~120자 내외, 2 문장.
     bio: '금융권 미션 크리티컬 시스템 6년차 Financial Channel & Integration Engineer.\n일 700만+ 트랜잭션 API Gateway 신규 구축과 EAI 플랫폼 JDK LTS 업그레이드 무중단 이관을 Technical Lead로 주도했으며, 채널계(MCI)·대외계(FEP)·EAI·APIM 전 영역 운영 경험을 바탕으로 금융 데이터의 흐름과 시스템 간 연계 구조를 깊이 이해하고 있습니다.\n현재 AWS 기반 커머스 풀스택(ShakiShaki Archive)을 직접 구축·라이브 운영하며, 동일한 설계·운영 원칙을 커머스 도메인으로 확장 중입니다.',
     avatarSrc: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776603053/shakishaki/products/gh2chgbo6bftjnjopmrg.jpg',

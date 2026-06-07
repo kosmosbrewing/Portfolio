@@ -19,7 +19,7 @@ const archSrc = 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776602102/s
     <hr class="mx-auto mb-10 w-full max-w-[75rem] border-0 border-t border-ink-line" aria-hidden="true" />
     <div class="container-read">
       <header class="mb-10 reveal">
-        <h2 class="text-[18px] font-bold text-ink">Work Experience</h2>
+        <h2 class="text-[18px] font-bold text-ink">TPM Experience</h2>
       </header>
 
       <div>

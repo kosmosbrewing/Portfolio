@@ -46,7 +46,7 @@ function next() {
     <hr class="mx-auto mb-10 w-full max-w-[75rem] border-0 border-t border-ink-line" aria-hidden="true" />
     <div class="container-read">
       <header class="mb-10 reveal">
-        <h2 class="text-[18px] font-bold text-ink">Personal Project</h2>
+        <h2 class="text-[18px] font-bold text-ink">Product Case Study</h2>
       </header>
 
       <!-- Overview + Info 통합 -->

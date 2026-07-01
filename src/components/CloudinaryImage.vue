@@ -15,6 +15,9 @@
  *  - fade      : 기본 true. carousel처럼 외부에서 opacity를 관리하면 false로.
  */
 import { computed, ref } from 'vue';
+import { useT } from '@/composables/usePortfolio';
+
+const t = useT();
 
 const props = withDefaults(defineProps<{
   src: string;
@@ -117,7 +120,7 @@ function onError() {
       v-if="errored"
       class="absolute inset-0 flex items-center justify-center text-[11px] text-ink-hint"
     >
-      이미지를 불러올 수 없습니다
+      {{ t('imageLoadFailed') }}
     </span>
   </span>
 </template>

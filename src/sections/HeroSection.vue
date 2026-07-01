@@ -2,11 +2,14 @@
 /**
  * HeroSection — 레퍼런스 매칭: 원형 아바타(좌) + 이름/직함/링크/바이오(우) 수평 배치.
  */
-import { portfolio } from '@/data/portfolio';
+import { computed, defineAsyncComponent } from 'vue';
 import CloudinaryImage from '@/components/CloudinaryImage.vue';
-import { defineAsyncComponent } from 'vue';
+import { usePortfolio, useT } from '@/composables/usePortfolio';
 
-const hero = portfolio.hero;
+const portfolio = usePortfolio();
+const t = useT();
+const hero = computed(() => portfolio.value.hero);
+
 const PrintPortfolioQr = import.meta.env.DEV
   ? defineAsyncComponent(() => import('@/components/PrintPortfolioQr.vue'))
   : null;
@@ -34,9 +37,7 @@ const PrintPortfolioQr = import.meta.env.DEV
               :height="128"
               eager
             />
-            <div v-else class="flex h-full w-full items-center justify-center text-center text-[11px] text-ink-hint">
-              프로필 사진<br />업로드 예정
-            </div>
+            <div class="flex h-full w-full items-center justify-center text-center text-[11px] text-ink-hint whitespace-pre-line" v-else>{{ t('avatarFallback') }}</div>
           </figure>
 
           <!-- Identity stack: 이름 → 직함 → 링크 → bio -->
@@ -51,7 +52,7 @@ const PrintPortfolioQr = import.meta.env.DEV
               {{ hero.role }}
             </p>
             <p class="mt-2 max-w-prose text-pretty text-[15px] leading-relaxed7 text-ink-body whitespace-pre-line">{{ hero.bio }}</p>
-            <!-- LinkedIn · GitHub · shakishakiarchive.com 일렬 -->
+            <!-- LinkedIn · GitHub · shakishakiarchive.com 일렬 (URL은 로케일 무관 상수) -->
             <p class="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-[14px] text-ink-muted">
               <a href="https://www.linkedin.com/in/%EA%B7%9C%EB%B9%88-%EC%9D%B4-357b46119/" target="_blank" rel="noopener" class="link">
                 LinkedIn<span aria-hidden="true" class="link-arrow ml-0.5">↗</span>

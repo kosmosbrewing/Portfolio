@@ -7,16 +7,21 @@
  * 모달 확대 시 carousel 카드는 nav로 페이지 넘김 지원.
  */
 import { computed, reactive, ref } from 'vue';
-import { portfolio } from '@/data/portfolio';
 import CloudinaryImage from '@/components/CloudinaryImage.vue';
 import ImageModal from '@/components/ImageModal.vue';
+import { usePortfolio, useT } from '@/composables/usePortfolio';
 
-const { finops, performance, cicd } = portfolio.ops;
-const cards = [
-  { label: 'FinOps', data: finops },
-  { label: 'Performance', data: performance },
-  { label: 'CI/CD', data: cicd },
-] as const;
+const portfolio = usePortfolio();
+const t = useT();
+
+const cards = computed(() => {
+  const ops = portfolio.value.ops;
+  return [
+    { label: 'FinOps', data: ops.finops },
+    { label: 'Performance', data: ops.performance },
+    { label: 'CI/CD', data: ops.cicd },
+  ] as const;
+});
 
 // 카드별 carousel 현재 인덱스
 const carouselIndex = reactive<Record<string, number>>({
@@ -37,7 +42,7 @@ const modalOpen = ref(false);
 const modalCardLabel = ref<string | null>(null);
 const modalIdx = ref(0);
 
-const modalCard = computed(() => cards.find((c) => c.label === modalCardLabel.value));
+const modalCard = computed(() => cards.value.find((c) => c.label === modalCardLabel.value));
 const modalImages = computed(() => modalCard.value?.data.evidences ?? []);
 const activeModalImage = computed(() => modalImages.value[modalIdx.value] ?? null);
 const modalHasNav = computed(() => modalImages.value.length > 1);
@@ -61,7 +66,7 @@ function modalNext() {
   <hr class="mx-auto mt-14 w-full max-w-[75rem] border-0 border-t border-ink-line print:break-before-page" aria-hidden="true" />
   <div class="mt-10 reveal">
     <p class="eyebrow">Quality &amp; Ops</p>
-    <h3 class="mt-2 text-[18px] font-bold text-ink">비용 · 성능 · 무중단 운영 지표</h3>
+    <h3 class="mt-2 text-[18px] font-bold text-ink">{{ t('qualitySubtitle') }}</h3>
   </div>
 
   <div class="mt-10">
@@ -122,13 +127,13 @@ function modalNext() {
                   type="button"
                   @click.stop="prevSlide(card.label, card.data.evidences.length)"
                   class="carousel-nav left-3"
-                  aria-label="이전 이미지"
+                  :aria-label="t('ariaPrevImage')"
                 >&larr;</button>
                 <button
                   type="button"
                   @click.stop="nextSlide(card.label, card.data.evidences.length)"
                   class="carousel-nav right-3"
-                  aria-label="다음 이미지"
+                  :aria-label="t('ariaNextImage')"
                 >&rarr;</button>
               </div>
 

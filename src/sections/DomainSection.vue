@@ -2,16 +2,19 @@
 /**
  * Technical Decisions — 비즈니스 가치 중심, 개행 분리로 가독성 확보.
  */
-import { portfolio } from '@/data/portfolio';
+import { computed } from 'vue';
+import { usePortfolio, useT } from '@/composables/usePortfolio';
 
-const cards = portfolio.domain;
+const portfolio = usePortfolio();
+const t = useT();
+const cards = computed(() => portfolio.value.domain);
 </script>
 
 <template>
   <hr class="mx-auto mt-14 w-full max-w-[75rem] border-0 border-t border-ink-line print:break-before-page" aria-hidden="true" />
   <div class="mt-10 reveal">
     <p class="eyebrow">Technical Decisions</p>
-    <h3 class="mt-2 text-[18px] font-bold text-ink">커머스 도메인에서 마주친 세 가지 문제와 해결</h3>
+    <h3 class="mt-2 text-[18px] font-bold text-ink">{{ t('decisionsSubtitle') }}</h3>
   </div>
 
   <div class="mt-10">

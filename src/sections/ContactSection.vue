@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { portfolio } from '@/data/portfolio';
+import { computed } from 'vue';
+import { usePortfolio } from '@/composables/usePortfolio';
 
-const contact = portfolio.contact;
+const portfolio = usePortfolio();
+const contact = computed(() => portfolio.value.contact);
 </script>
 
 <template>

@@ -4,6 +4,9 @@
  * Why: 여러 섹션에서 이미지 확대가 필요하므로 공통 컴포넌트로 분리.
  */
 import { watch, onMounted, onBeforeUnmount } from 'vue';
+import { useT } from '@/composables/usePortfolio';
+
+const t = useT();
 
 const props = defineProps<{
   src: string;
@@ -99,9 +102,9 @@ onBeforeUnmount(() => {
           type="button"
           @click="requestClose"
           class="absolute right-4 top-4 z-10 inline-flex items-center gap-2 rounded-full border border-ink-line bg-paper px-4 py-2 text-[13px] font-medium text-ink shadow-lg transition-colors duration-200 ease-smooth hover:bg-white focus:outline-none focus:ring-2 focus:ring-ink md:right-6 md:top-6"
-          aria-label="닫기"
+          :aria-label="t('ariaClose')"
         >
-          <span>닫기</span>
+          <span>{{ t('close') }}</span>
           <kbd class="rounded border border-ink-line bg-ink-surface px-1.5 py-0.5 text-[10px] font-medium text-ink-muted">ESC</kbd>
         </button>
 
@@ -111,7 +114,7 @@ onBeforeUnmount(() => {
           type="button"
           @click.stop="emit('prev')"
           class="absolute left-4 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-paper/90 border border-ink-line text-ink shadow-lg hover:bg-white transition-colors md:left-6"
-          aria-label="이전 화면"
+          :aria-label="t('ariaPrevScreen')"
         >
           &larr;
         </button>
@@ -130,7 +133,7 @@ onBeforeUnmount(() => {
           type="button"
           @click.stop="emit('next')"
           class="absolute right-4 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-paper/90 border border-ink-line text-ink shadow-lg hover:bg-white transition-colors md:right-6"
-          aria-label="다음 화면"
+          :aria-label="t('ariaNextScreen')"
         >
           &rarr;
         </button>

@@ -2,12 +2,15 @@
 /**
  * CareerSection — 2컬럼 타임라인 레이아웃.
  */
-import { ref } from 'vue';
-import { portfolio } from '@/data/portfolio';
+import { computed, ref } from 'vue';
 import ImageModal from '@/components/ImageModal.vue';
 import CloudinaryImage from '@/components/CloudinaryImage.vue';
+import { usePortfolio, useT } from '@/composables/usePortfolio';
 
-const career = portfolio.career;
+const portfolio = usePortfolio();
+const t = useT();
+const career = computed(() => portfolio.value.career);
+
 const modalOpen = ref(false);
 const archSrc = 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776602102/shakishaki/products/xlieiolctztatj7rofxl.png';
 </script>
@@ -51,7 +54,7 @@ const archSrc = 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776602102/s
             <div class="media-frame media-frame-zoom" @click="modalOpen = true">
               <CloudinaryImage
                 :src="archSrc"
-                alt="직무 구성도"
+                :alt="t('roleDiagramAlt')"
                 :width="1200"
               />
             </div>
@@ -63,7 +66,7 @@ const archSrc = 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776602102/s
 
   <ImageModal
     :src="archSrc"
-    alt="직무 구성도"
+    :alt="t('roleDiagramAlt')"
     :open="modalOpen"
     @close="modalOpen = false"
   />

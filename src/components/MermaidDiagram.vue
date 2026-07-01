@@ -5,6 +5,9 @@
  *      사이트 톤(흑백 + Pretendard)에 맞춰 themeVariables 커스터마이징.
  */
 import { ref, onMounted, onBeforeUnmount, useId } from 'vue';
+import { useT } from '@/composables/usePortfolio';
+
+const t = useT();
 
 const props = withDefaults(
   defineProps<{
@@ -127,13 +130,13 @@ onBeforeUnmount(() => {
       v-if="status === 'idle' || status === 'loading'"
       class="flex h-[320px] items-center justify-center text-[12px] text-ink-hint print:hidden"
     >
-      다이어그램 로딩 중…
+      {{ t('diagramLoading') }}
     </div>
     <div
       v-else-if="status === 'error'"
       class="flex h-[320px] items-center justify-center text-[12px] text-ink-muted print:hidden"
     >
-      다이어그램 렌더 실패 — {{ errorMsg }}
+      {{ t('diagramRenderFailed') }} — {{ errorMsg }}
     </div>
   </div>
 </template>

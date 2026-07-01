@@ -4,9 +4,13 @@
  */
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import MermaidDiagram from './MermaidDiagram.vue';
+import { useT } from '@/composables/usePortfolio';
+
+const t = useT();
 
 defineProps<{
   code: string;
+  caption?: string;
 }>();
 
 const open = ref(false);
@@ -47,7 +51,7 @@ onBeforeUnmount(() => {
       type="button"
       @click="openModal"
       class="media-frame media-frame-zoom w-full p-4 text-left"
-      aria-label="다이어그램 확대 보기"
+      :aria-label="t('ariaDiagramZoom')"
     >
       <MermaidDiagram :code="code" :fit-container="true" />
     </button>
@@ -60,16 +64,16 @@ onBeforeUnmount(() => {
         class="fixed inset-0 z-50 flex items-center justify-center bg-ink/75 p-4 backdrop-blur-sm md:p-8"
         role="dialog"
         aria-modal="true"
-        aria-label="다이어그램 확대 보기"
+        :aria-label="t('ariaDiagramZoom')"
         @click.self="closeModal"
       >
         <button
           type="button"
           @click="closeModal"
           class="absolute right-4 top-4 z-10 inline-flex items-center gap-2 rounded-full border border-ink-line bg-paper px-4 py-2 text-[13px] font-medium text-ink shadow-lg transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-ink md:right-6 md:top-6"
-          aria-label="닫기"
+          :aria-label="t('ariaClose')"
         >
-          <span>닫기</span>
+          <span>{{ t('close') }}</span>
           <kbd class="rounded border border-ink-line bg-ink-surface px-1.5 py-0.5 text-[10px] font-medium text-ink-muted">ESC</kbd>
         </button>
 

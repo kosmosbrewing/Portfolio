@@ -1,41 +1,45 @@
 <script setup lang="ts">
 /**
  * ProjectSection — 단일 프로젝트(ShakiShaki Archive)를 h2 하나로 묶고
- * 하위 서브섹션(Technical Decisions · Quality & Ops · Evidence)을 h3로 병합.
+ * 하위 서브섹션(Technical Decisions · Quality & Ops)을 h3로 병합.
  *
- * 상단 고정 article-block 4개 (Overview / Info / Architecture / Live Screens) 뒤에
- * 3개의 서브섹션 fragment(DomainSection / OpsSection / EvidenceSection)가 붙는다.
- * 모든 블록은 `140px | 1fr` 그리드로 좌측 레이블을 갖는다.
+ * 상단 고정 article-block 3개 (Overview / Architecture / Live Screens) 뒤에
+ * 2개의 서브섹션 fragment(DomainSection / OpsSection)가 붙는다.
  */
 import { ref, computed } from 'vue';
-import { portfolio } from '@/data/portfolio';
 import DiagramViewer from '@/components/DiagramViewer.vue';
 import ImageModal from '@/components/ImageModal.vue';
 import CloudinaryImage from '@/components/CloudinaryImage.vue';
 import DomainSection from './DomainSection.vue';
 import OpsSection from './OpsSection.vue';
+import { usePortfolio, useT } from '@/composables/usePortfolio';
 
-const project = portfolio.project;
+const portfolio = usePortfolio();
+const t = useT();
+const project = computed(() => portfolio.value.project);
 
-const screens = [
-  { label: '메인', src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654161/shakishaki/products/efei9mmqrqeord1e9smb.jpg', alt: '메인 화면' },
-  { label: '로그인', src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654193/shakishaki/products/zvg0s2m7lgurv1c4wn4c.png', alt: '로그인 화면' },
-  { label: '상품 상세', src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654225/shakishaki/products/zwuzaczcoaaoy6ldx1jw.jpg', alt: '상품 상세 화면' },
-  { label: '장바구니', src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654246/shakishaki/products/yqxjaggs5e3sfftpqc57.png', alt: '장바구니 화면' },
-  { label: '결제', src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654265/shakishaki/products/cez199yqfusevleuttsy.png', alt: '결제 화면' },
-  { label: '관리자', src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654299/shakishaki/products/laqmihvtcmh87in07rhq.png', alt: '관리자 화면' },
-];
+/**
+ * Why: 스크린 URL은 로케일 무관 상수. label/alt만 t()로 로케일 분기.
+ */
+const screens = computed(() => [
+  { label: t.value('screenMain'), src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1782875994/shakishaki/products/m7wlft677uxmdji05prm.jpg', alt: t.value('screenMainAlt') },
+  { label: t.value('screenLogin'), src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654193/shakishaki/products/zvg0s2m7lgurv1c4wn4c.png', alt: t.value('screenLoginAlt') },
+  { label: t.value('screenProductDetail'), src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654225/shakishaki/products/zwuzaczcoaaoy6ldx1jw.jpg', alt: t.value('screenProductDetailAlt') },
+  { label: t.value('screenCart'), src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654246/shakishaki/products/yqxjaggs5e3sfftpqc57.png', alt: t.value('screenCartAlt') },
+  { label: t.value('screenCheckout'), src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654265/shakishaki/products/cez199yqfusevleuttsy.png', alt: t.value('screenCheckoutAlt') },
+  { label: t.value('screenAdmin'), src: 'https://res.cloudinary.com/diyuvt3qg/image/upload/v1776654299/shakishaki/products/laqmihvtcmh87in07rhq.png', alt: t.value('screenAdminAlt') },
+]);
 
 const currentIndex = ref(0);
 const modalOpen = ref(false);
 
-const currentScreen = computed(() => screens[currentIndex.value]!);
+const currentScreen = computed(() => screens.value[currentIndex.value]!);
 
 function prev() {
-  currentIndex.value = (currentIndex.value - 1 + screens.length) % screens.length;
+  currentIndex.value = (currentIndex.value - 1 + screens.value.length) % screens.value.length;
 }
 function next() {
-  currentIndex.value = (currentIndex.value + 1) % screens.length;
+  currentIndex.value = (currentIndex.value + 1) % screens.value.length;
 }
 </script>
 
@@ -63,7 +67,7 @@ function next() {
               class="media-frame media-frame-link"
             >
               <CloudinaryImage
-                src="https://res.cloudinary.com/diyuvt3qg/image/upload/w_1200,h_630,c_pad,b_white/v1772943726/shakishaki/products/mcc6wkapdzftcvhbvspz.png"
+                src="https://res.cloudinary.com/diyuvt3qg/image/upload/w_1200,h_630,c_pad,b_white/v1780209629/shakishaki/products/uuwj2tqmx6c7x4wsn6r5.png"
                 alt="ShakiShaki Archive"
                 :width="320"
                 :height="168"
@@ -73,7 +77,7 @@ function next() {
               <h3 class="text-[18px] font-semibold text-ink leading-snugger">
                 {{ project.name }}
               </h3>
-              <p class="text-[14px] text-ink-muted">여성 빈티지 이커머스 · 1인 풀스택 · 실결제 운영 중</p>
+              <p class="text-[14px] text-ink-muted">{{ t('projectSubtitle') }}</p>
               <p class="text-[13px] text-ink-body">Vue 3 · Node.js · TypeScript · Drizzle · PostgreSQL</p>
               <p class="text-[13px] text-ink-body">AWS (ECS · RDS · CloudFront) · GitHub Actions CI/CD</p>
             </div>
@@ -119,13 +123,13 @@ function next() {
                 type="button"
                 @click="prev"
                 class="carousel-nav left-3"
-                aria-label="이전 화면"
+                :aria-label="t('ariaPrevScreen')"
               >&larr;</button>
               <button
                 type="button"
                 @click="next"
                 class="carousel-nav right-3"
-                aria-label="다음 화면"
+                :aria-label="t('ariaNextScreen')"
               >&rarr;</button>
             </div>
 
@@ -137,7 +141,7 @@ function next() {
         </div>
       </article>
 
-      <!-- 서브섹션들: h3로 병합된 depth. Evidence는 해체되어 Ops.FinOps 하단에 figure로 첨부. -->
+      <!-- 서브섹션들: h3로 병합된 depth. -->
       <DomainSection />
       <OpsSection />
     </div>

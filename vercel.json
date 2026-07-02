@@ -6,7 +6,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/((?!assets/|favicon\\.svg|apple-touch-icon\\.png|robots\\.txt|sitemap\\.xml).*)", "destination": "/index.html" }
+    { "source": "/:path*", "destination": "/index.html" }
   ],
   "headers": [
     {
